@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -49,7 +50,8 @@ public class UI {
 				innerPanel = Variables.getDefaultOptionPanel();
 
 				button = new JButton("Options");
-				button.setSize(100, Variables.getExtraHeight());
+				button.setFont(new Font("Microsoft JhengHei", Font.BOLD, 14));
+				button.setSize(Variables.getMenuButtonSize());
 				addPopup(button, getPopupMenu());
 
 				panel.add(button);
@@ -99,6 +101,7 @@ public class UI {
 
 	private static JMenuItem getBasicMenuItem() {
 		JMenuItem basic = new JMenuItem("Basic");
+		basic.setFont(new Font("Microsoft JhengHei", Font.BOLD, 14));
 		basic.addActionListener(new ActionListener() {
 
 			@Override
@@ -113,8 +116,9 @@ public class UI {
 	}
 
 	private static JMenuItem getBodmasMenuItem() {
-		JMenuItem basic = new JMenuItem("Bodmas");
-		basic.addActionListener(new ActionListener() {
+		JMenuItem bodmas = new JMenuItem("Bodmas");
+		bodmas.setFont(new Font("Microsoft JhengHei", Font.BOLD, 14));
+		bodmas.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -124,12 +128,13 @@ public class UI {
 
 		});
 
-		return basic;
+		return bodmas;
 	}
 
 	private static JMenuItem getEqnsMenuItem() {
-		JMenuItem basic = new JMenuItem("Equations");
-		basic.addActionListener(new ActionListener() {
+		JMenuItem eqns = new JMenuItem("Equations");
+		eqns.setFont(new Font("Microsoft JhengHei", Font.BOLD, 14));
+		eqns.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -139,12 +144,13 @@ public class UI {
 
 		});
 
-		return basic;
+		return eqns;
 	}
 
 	private static JMenuItem getScnMenuItem() {
-		JMenuItem basic = new JMenuItem("Scientific");
-		basic.addActionListener(new ActionListener() {
+		JMenuItem scn = new JMenuItem("Scientific");
+		scn.setFont(new Font("Microsoft JhengHei", Font.BOLD, 14));
+		scn.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -154,7 +160,7 @@ public class UI {
 
 		});
 
-		return basic;
+		return scn;
 	}
 
 	private static void updateView(JPanel panel) {

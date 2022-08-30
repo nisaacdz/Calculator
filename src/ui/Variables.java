@@ -21,11 +21,11 @@ public class Variables {
 	}
 
 	public static Bounds getPopupMenuSize() {
-		return new UsefulClasses.Bounds(200, 300);
+		return new UsefulClasses.Bounds(150, 200);
 	}
 
 	public static Bounds getMenuButtonSize() {
-		return new UsefulClasses.Bounds(30, 25);
+		return new UsefulClasses.Bounds(150, getExtraHeight());
 	}
 
 	public static int getExtraHeight() {
