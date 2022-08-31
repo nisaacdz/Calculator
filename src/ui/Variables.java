@@ -9,7 +9,7 @@ import ui.UsefulClasses.Bounds;
 public class Variables {
 
 	public static Bounds getFrameSize() {
-		return new UsefulClasses.Bounds(200, 150, 400, 600);
+		return new UsefulClasses.Bounds(30, 30, 400, 600);
 	}
 
 	public static Color getFrameColor() {
@@ -33,6 +33,10 @@ public class Variables {
 	}
 
 	public static JPanel getDefaultOptionPanel() {
-		return UI.getBasicPanel();
+		return UI.getStandardPanel();
+	}
+
+	public static Color getButtonColor() {
+		return Color.ORANGE;
 	}
 }
