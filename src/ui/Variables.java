@@ -9,7 +9,7 @@ import ui.UsefulClasses.Bounds;
 public class Variables {
 
 	public static Bounds getFrameSize() {
-		return new UsefulClasses.Bounds(30, 30, 400, 600);
+		return new UsefulClasses.Bounds(30, 30, 420, 600);
 	}
 
 	public static Color getFrameColor() {
@@ -17,15 +17,23 @@ public class Variables {
 	}
 
 	public static int getActivePanelWidth() {
-		return 400;
+		return 450;
+	}
+
+	public static Color getScreenAndBackgroundColor() {
+		return new Color(220, 220, 220);
 	}
 
 	public static Bounds getPopupMenuSize() {
-		return new UsefulClasses.Bounds(150, 200);
+		return new UsefulClasses.Bounds(200, 400);
 	}
 
 	public static Bounds getMenuButtonSize() {
 		return new UsefulClasses.Bounds(150, getExtraHeight());
+	}
+
+	public static Color getStandardModeNumberButtons() {
+		return new Color(245, 240, 255);
 	}
 
 	public static int getExtraHeight() {
@@ -37,6 +45,10 @@ public class Variables {
 	}
 
 	public static Color getButtonColor() {
-		return Color.ORANGE;
+		return Color.LIGHT_GRAY;
+	}
+
+	public static Color getBackgroundColor() {
+		return new Color(200, 220, 255);
 	}
 }

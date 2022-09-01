@@ -20,8 +20,11 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 
 import ui.UsefulClasses.Bounds;
+import ui.ds.RoundedBorder;
 
 public class UI {
 
@@ -32,6 +35,7 @@ public class UI {
 	private static Insets in;
 	private static Bounds b;
 	private static JButton optionsButton;
+	private static JButton resizeButton;
 
 	private static int innerPanelHeight;
 	private static int innerPanelWidth;
@@ -51,18 +55,24 @@ public class UI {
 				innerPanelHeight = b.height - in.top - in.bottom - Variables.getExtraHeight();
 				innerPanelWidth = b.width - in.left - in.right;
 
-				System.out.println(frame.getContentPane().getSize());
+				JPanel panel = new JPanel() {
+					private static final long serialVersionUID = 1L;
 
-				JPanel panel = new JPanel();
-				panel.setBackground(Color.CYAN);
+					@Override
+					public void paint(Graphics g) {
+						super.paint(g);
+						resizeButton.setBounds(getWidth() - 80, 0, 55, getHeight());
+					}
+				};
+				panel.setBackground(Variables.getScreenAndBackgroundColor());
 				panel.setLayout(null);
 
 				innerPanel = Variables.getDefaultOptionPanel();
 
 				optionsButton = new JButton("Options");
-				optionsButton.setFont(new Font("Microsoft JhengHei", Font.BOLD, 14));
+				optionsButton.setFont(new Font("Microsoft JhengHei", Font.BOLD, 18));
 				optionsButton.setSize(Variables.getMenuButtonSize());
-				optionsButton.setBorder(BorderFactory.createEmptyBorder());
+				optionsButton.setBorder(new RoundedBorder(Variables.getScreenAndBackgroundColor(), 1, 8));
 				optionsButton.setBackground(Variables.getButtonColor());
 				addMouseListenerTo(optionsButton);
 				addPopup(optionsButton, getPopupMenu());
@@ -76,12 +86,10 @@ public class UI {
 					@Override
 					public void paint(Graphics g) {
 						super.paint(g);
-
 						innerPanel.setSize(getSize());
 					}
 				};
 				activePanel.setLayout(null);
-				activePanel.setBackground(Color.PINK);
 
 				activePanel.add(innerPanel);
 
@@ -95,6 +103,14 @@ public class UI {
 										GroupLayout.PREFERRED_SIZE)
 								.addComponent(activePanel, GroupLayout.DEFAULT_SIZE, innerPanelHeight,
 										Short.MAX_VALUE)));
+
+				resizeButton = new JButton("↖↘");
+				resizeButton.setFont(new Font(Font.DIALOG, Font.BOLD, 11));
+				resizeButton.setBackground(Variables.getButtonColor());
+				addMouseListenerTo(resizeButton);
+				addResizeListener(resizeButton);
+				panel.add(resizeButton);
+
 				frame.getContentPane().setLayout(groupLayout);
 				initialize();
 			}
@@ -115,7 +131,7 @@ public class UI {
 
 	private static JMenuItem getConverterMenuItem() {
 		JMenuItem converter = new JMenuItem("Converter");
-		converter.setFont(new Font("Microsoft JhengHei", Font.BOLD, 14));
+		converter.setFont(new Font("Microsoft JhengHei", Font.BOLD, 23));
 		converter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -131,7 +147,7 @@ public class UI {
 
 	private static JMenuItem getStandardMenuItem() {
 		JMenuItem standard = new JMenuItem("Standard");
-		standard.setFont(new Font("Microsoft JhengHei", Font.BOLD, 14));
+		standard.setFont(new Font("Microsoft JhengHei", Font.BOLD, 23));
 		standard.addActionListener(new ActionListener() {
 
 			@Override
@@ -147,7 +163,7 @@ public class UI {
 
 	private static JMenuItem getScientificMenuItem() {
 		JMenuItem scientific = new JMenuItem("Scientific");
-		scientific.setFont(new Font("Microsoft JhengHei", Font.BOLD, 14));
+		scientific.setFont(new Font("Microsoft JhengHei", Font.BOLD, 23));
 		scientific.addActionListener(new ActionListener() {
 
 			@Override
@@ -163,7 +179,7 @@ public class UI {
 
 	private static JMenuItem getCalculusMenuItem() {
 		JMenuItem calc = new JMenuItem("Calculus");
-		calc.setFont(new Font("Microsoft JhengHei", Font.BOLD, 14));
+		calc.setFont(new Font("Microsoft JhengHei", Font.BOLD, 23));
 		calc.addActionListener(new ActionListener() {
 
 			@Override
@@ -179,7 +195,7 @@ public class UI {
 
 	private static JMenuItem getGraphMenuItem() {
 		JMenuItem graph = new JMenuItem("Graphing");
-		graph.setFont(new Font("Microsoft JhengHei", Font.BOLD, 14));
+		graph.setFont(new Font("Microsoft JhengHei", Font.BOLD, 23));
 		graph.addActionListener(new ActionListener() {
 
 			@Override
@@ -204,20 +220,26 @@ public class UI {
 	protected static JPanel getStandardPanel() {
 		JFormattedTextField board1 = new JFormattedTextField();
 		board1.setBorder(BorderFactory.createEmptyBorder());
-		board1.setBackground(Color.LIGHT_GRAY);
+		board1.setBackground(Variables.getScreenAndBackgroundColor());
 		board1.setForeground(Color.RED);
 		board1.setHorizontalAlignment(JTextField.RIGHT);
 		board1.setFont(new Font("Microsoft JhengHei", Font.BOLD, 30));
 
 		JFormattedTextField board2 = new JFormattedTextField();
-		board2.setBackground(Color.LIGHT_GRAY);
+		board2.setBackground(Variables.getScreenAndBackgroundColor());
 		board2.setBorder(BorderFactory.createEmptyBorder());
 		board2.setForeground(Color.BLACK);
 		board2.setHorizontalAlignment(JTextField.RIGHT);
 		board2.setFont(new Font("Microsoft JhengHei", Font.BOLD, 30));
+		board2.getCaret().setBlinkRate(500);
+		board2.setCaretPosition(0);
+		board2.getCaret().setVisible(true);
+		board2.setCaretColor(Color.RED);
+		board2.putClientProperty("caretWidth", 3);
+		addCaretListenerTo(board2);
 
 		JPanel panel = new StandardPanel(board2);
-		panel.setBackground(Color.LIGHT_GRAY);
+		panel.setBackground(Variables.getScreenAndBackgroundColor());
 
 		JPanel standard = new JPanel() {
 			private static final long serialVersionUID = 1L;
@@ -233,12 +255,12 @@ public class UI {
 		};
 
 		standard.setLayout(null);
+		standard.setBackground(Variables.getScreenAndBackgroundColor());
 		standard.add(board1);
 		standard.add(board2);
 		standard.add(panel);
 
 		standard.setSize(innerPanelWidth, innerPanelHeight);
-		standard.setBackground(Color.BLUE);
 		return standard;
 	}
 
@@ -264,7 +286,7 @@ public class UI {
 
 	private static void initialize() {
 		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	}
 
@@ -294,7 +316,7 @@ public class UI {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				button.setBackground(Color.RED);
+				button.setBackground(Color.WHITE);
 			}
 
 			@Override
@@ -306,29 +328,22 @@ public class UI {
 
 	}
 
-	private static void addControlListener(JButton button, JFormattedTextField board) {
-		button.addActionListener(new ActionListener() {
+	private static void addCaretListenerTo(JFormattedTextField board) {
+		board.addCaretListener(new CaretListener() {
+
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO
+			public void caretUpdate(CaretEvent e) {
+				board.getCaret().setVisible(true);
 			}
+
 		});
 	}
 
-	private static void addKeyListenerNum(JButton button, JFormattedTextField board) {
+	private static void addResizeListener(JButton button) {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO
-			}
-		});
-	}
-
-	private static void addConvolutedListener(JButton button, JFormattedTextField board) {
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO
+				frame.setBounds(frame.getX(), frame.getY(), b.width, b.height);
 			}
 		});
 	}

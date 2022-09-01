@@ -1,11 +1,19 @@
 package ui;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Objects;
 
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import ui.ds.Vec;
 
 public class StandardPanel extends JPanel {
 
@@ -14,97 +22,163 @@ public class StandardPanel extends JPanel {
 
 		public MyButton(String args) {
 			super(args);
-			this.setFont(new Font("Microsoft JhengHei", Font.BOLD, 23));
+			this.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
+			this.setBackground(Color.WHITE);
+		}
+
+		public MyButton(String args, int fontSize, Color color) {
+			super(args);
+			this.setFont(new Font(Font.DIALOG, Font.BOLD, fontSize));
+			this.setBackground(color);
+		}
+
+		public MyButton(int num) {
+			super(String.valueOf(num));
+			this.setBackground(Variables.getStandardModeNumberButtons());
+			this.setFont(new Font("Microsoft JhengHei", Font.BOLD, 30));
+		}
+
+		public MyButton(String args, Color color) {
+			super(args);
+			this.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
+			this.setBackground(color);
+
+		}
+
+		public MyButton(String args, int fontSize) {
+			super(args);
+			this.setFont(new Font(Font.DIALOG, Font.BOLD, fontSize));
+			this.setBackground(Color.WHITE);
+		}
+	}
+
+	public static class Status {
+		String text;
+		int caretPosition;
+
+		public Status(String text, int pos) {
+			this.text = text;
+			this.caretPosition = pos;
+		}
+
+		@Override
+		public String toString() {
+			return "[" + text + ", " + caretPosition + "]";
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(text);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null || obj.getClass() != getClass())
+				return false;
+			Status other = (Status) obj;
+			return other.text.equals(text);
 		}
 	}
 
 	private static final long serialVersionUID = 1L;
 
-	JFormattedTextField board;
+	private JFormattedTextField board;
 	private JButton undo, redo, left, right, clear, neg, inv, sqr, sqrt, backspace;
 	private JButton seven, eight, nine, minus, abs, four, five, six, plus, times;
 	private JButton one, two, three, divide, mod, zero, dot, open, close, equals;
 
+	private JButton[] buttonArray;
+
+	private int caretPosition = 0;
+
+	private Vec<Status> myVector = new Vec<>(350);
+
 	public StandardPanel(JFormattedTextField board) {
 		super();
 		this.board = board;
-
+		myVector.push(new StandardPanel.Status("", 0));
+		this.setLayout(null);
 		initializeButtons();
+		implementListeners();
 	}
 
 	private void initializeButtons() {
-		undo = new MyButton("↺");
-		redo = new MyButton("↻");
+		undo = new MyButton("↻", 27, Color.LIGHT_GRAY);
+		redo = new MyButton("↺", 27, Color.LIGHT_GRAY);
 		left = new MyButton("←");
 		right = new MyButton("→");
-		clear = new MyButton("CE");
+		clear = new MyButton("CE", Color.LIGHT_GRAY);
 		neg = new MyButton("-x");
-		inv = new MyButton("inv");
+		inv = new MyButton("inv", 18);
 		sqr = new MyButton("x²");
-		sqrt = new MyButton("√");
-		backspace = new MyButton("⌫");
-		seven = new MyButton("7");
-		eight = new MyButton("8");
-		nine = new MyButton("9");
+		sqrt = new MyButton("√", 27);
+		backspace = new MyButton("⌫", Color.LIGHT_GRAY);
+		seven = new MyButton(7);
+		eight = new MyButton(8);
+		nine = new MyButton(9);
 		minus = new MyButton("-");
 		abs = new MyButton("||");
-		four = new MyButton("4");
-		five = new MyButton("5");
-		six = new MyButton("6");
+		four = new MyButton(4);
+		five = new MyButton(5);
+		six = new MyButton(6);
 		plus = new MyButton("+");
 		times = new MyButton("×");
-		one = new MyButton("1");
-		two = new MyButton("2");
-		three = new MyButton("3");
+		one = new MyButton(1);
+		two = new MyButton(2);
+		three = new MyButton(3);
 		divide = new MyButton("÷");
-		mod = new MyButton("mod");
-		zero = new MyButton("0");
-		dot = new MyButton(".");
+		mod = new MyButton("mod", 18);
+		zero = new MyButton(0);
+		dot = new MyButton(".", 30);
 		open = new MyButton("(");
 		close = new MyButton(")");
-		equals = new MyButton("=");
+		equals = new MyButton("=", Color.LIGHT_GRAY);
 
-		this.add(undo);
-		this.add(redo);
-		this.add(left);
-		this.add(right);
-		this.add(clear);
-		this.add(neg);
-		this.add(inv);
-		this.add(sqr);
-		this.add(sqrt);
-		this.add(backspace);
-		this.add(seven);
-		this.add(eight);
-		this.add(nine);
-		this.add(minus);
-		this.add(abs);
-		this.add(four);
-		this.add(five);
-		this.add(six);
-		this.add(plus);
-		this.add(times);
-		this.add(one);
-		this.add(two);
-		this.add(three);
-		this.add(divide);
-		this.add(mod);
-		this.add(zero);
-		this.add(dot);
-		this.add(open);
-		this.add(close);
-		this.add(equals);
+		JButton[] myButtonArray = { undo, redo, left, right, clear, neg, inv, sqr, sqrt, backspace, seven, eight, nine,
+				minus, abs, four, five, six, plus, times, one, two, three, divide, mod, zero, dot, open, close,
+				equals };
+		this.buttonArray = myButtonArray;
+
+		resizeButtons(getWidth(), getHeight());
+
+		addAllToThis();
 	}
 
-	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	private void implementListeners() {
+		addKeyListenersTo(new JButton[] { one, two, three, four, five, six, seven, eight, nine, zero, dot, times, plus,
+				minus, divide, open, close });
+		addBackListenerTo(left, false);
+		addBackListenerTo(right, true);
+		addDeletionListenerTo(clear, true);
+		addDeletionListenerTo(backspace, false);
+		addUndoRedoListener(undo, true);
+		addUndoRedoListener(redo, false);
+		addDocumentListenerTo(board);
+	}
 
+	private void addKeyListenersTo(JButton[] buttons) {
+		for (JButton button : buttons) {
+			button.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					caretPosition = board.getCaretPosition() + 1;
+					board.setText(
+							new StringBuilder(board.getText()).insert(caretPosition - 1, button.getText()).toString());
+					board.setCaretPosition(caretPosition);
+				}
+			});
+		}
+	}
+
+	private void resizeButtons(int width, int height) {
 		int x = 0;
 		int y = 0;
 
-		int bWidth = (getWidth() - 12) / 5;
-		int bHeight = (getHeight() - 15) / 6;
+		int bWidth = (width - 12) / 5;
+		int bHeight = (height - 15) / 6;
+
+		makeButtonsInvisible();
+		removeAllFromThis();
 
 		undo.setBounds(x, y, bWidth, bHeight);
 		x += bWidth + 3;
@@ -180,6 +254,116 @@ public class StandardPanel extends JPanel {
 		close.setBounds(x, y, bWidth, bHeight);
 		x += bWidth + 3;
 		equals.setBounds(x, y, bWidth, bHeight);
+
+		addAllToThis();
+		makeButtonsVisible();
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+		resizeButtons(getWidth(), getHeight());
+	}
+
+	private void addBackListenerTo(JButton button, boolean forward) {
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				board.setCaretPosition(forward ? Math.min(board.getText().length(), board.getCaretPosition() + 1)
+						: Math.max(0, board.getCaretPosition() - 1));
+			}
+
+		});
+	}
+
+	private void addDeletionListenerTo(JButton button, boolean clear) {
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (clear) {
+					board.setText("");
+					board.getCaret().setVisible(true);
+				} else {
+					caretPosition = board.getCaretPosition();
+					StringBuilder s = new StringBuilder(board.getText());
+					if (caretPosition - 1 > -1 && caretPosition > 0) {
+						s.deleteCharAt(caretPosition - 1);
+						caretPosition -= 1;
+						board.setText(s.toString());
+						board.setCaretPosition(caretPosition);
+					}
+				}
+			}
+
+		});
+	}
+
+	private void addUndoRedoListener(JButton button, boolean undo) {
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (undo) {
+					myVector.undo();
+				} else {
+					myVector.redo();
+				}
+
+				if (myVector.len() == 0) {
+					board.setText("");
+				} else {
+					board.setText(myVector.peek().text);
+					board.setCaretPosition(myVector.peek().caretPosition);
+				}
+
+			}
+
+		});
+	}
+
+	private void addDocumentListenerTo(JFormattedTextField board2) {
+		board.getDocument().addDocumentListener(new DocumentListener() {
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				myVector.querry(new Status(board.getText(), caretPosition));
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+			}
+
+		});
+	}
+
+	private void makeButtonsInvisible() {
+		for (JButton button : buttonArray) {
+			button.setVisible(false);
+		}
+	}
+
+	private void makeButtonsVisible() {
+		for (JButton button : buttonArray) {
+			button.setVisible(true);
+		}
+	}
+
+	private void removeAllFromThis() {
+		for (JButton button : buttonArray) {
+			this.remove(button);
+		}
+	}
+
+	private void addAllToThis() {
+		for (JButton button : buttonArray) {
+			this.add(button);
+		}
 	}
 
 }
