@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Objects;
 
 import javax.swing.JButton;
@@ -12,6 +14,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.AttributeSet;
 
 import ui.ds.Vec;
 
@@ -23,13 +26,7 @@ public class StandardPanel extends JPanel {
 		public MyButton(String args) {
 			super(args);
 			this.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
-			this.setBackground(Color.WHITE);
-		}
-
-		public MyButton(String args, int fontSize, Color color) {
-			super(args);
-			this.setFont(new Font(Font.DIALOG, Font.BOLD, fontSize));
-			this.setBackground(color);
+			this.setBackground(new Color(200, 220, 255));
 		}
 
 		public MyButton(int num) {
@@ -48,7 +45,7 @@ public class StandardPanel extends JPanel {
 		public MyButton(String args, int fontSize) {
 			super(args);
 			this.setFont(new Font(Font.DIALOG, Font.BOLD, fontSize));
-			this.setBackground(Color.WHITE);
+			this.setBackground(new Color(200, 220, 255));
 		}
 	}
 
@@ -103,16 +100,16 @@ public class StandardPanel extends JPanel {
 	}
 
 	private void initializeButtons() {
-		undo = new MyButton("↻", 27, Color.LIGHT_GRAY);
-		redo = new MyButton("↺", 27, Color.LIGHT_GRAY);
+		undo = new MyButton("↻", 27);
+		redo = new MyButton("↺", 27);
 		left = new MyButton("←");
 		right = new MyButton("→");
-		clear = new MyButton("CE", Color.LIGHT_GRAY);
+		clear = new MyButton("CE", Variables.getStandardModeNumberButtons());
 		neg = new MyButton("-x");
 		inv = new MyButton("inv", 18);
 		sqr = new MyButton("x²");
 		sqrt = new MyButton("√", 27);
-		backspace = new MyButton("⌫", Color.LIGHT_GRAY);
+		backspace = new MyButton("⌫");
 		seven = new MyButton(7);
 		eight = new MyButton(8);
 		nine = new MyButton(9);
@@ -132,7 +129,7 @@ public class StandardPanel extends JPanel {
 		dot = new MyButton(".", 30);
 		open = new MyButton("(");
 		close = new MyButton(")");
-		equals = new MyButton("=", Color.LIGHT_GRAY);
+		equals = new MyButton("=", Variables.getStandardModeNumberButtons());
 
 		JButton[] myButtonArray = { undo, redo, left, right, clear, neg, inv, sqr, sqrt, backspace, seven, eight, nine,
 				minus, abs, four, five, six, plus, times, one, two, three, divide, mod, zero, dot, open, close,
@@ -154,20 +151,10 @@ public class StandardPanel extends JPanel {
 		addUndoRedoListener(undo, true);
 		addUndoRedoListener(redo, false);
 		addDocumentListenerTo(board);
-	}
-
-	private void addKeyListenersTo(JButton[] buttons) {
-		for (JButton button : buttons) {
-			button.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					caretPosition = board.getCaretPosition() + 1;
-					board.setText(
-							new StringBuilder(board.getText()).insert(caretPosition - 1, button.getText()).toString());
-					board.setCaretPosition(caretPosition);
-				}
-			});
-		}
+		addMouseListenersTo(new JButton[] { zero, one, two, three, four, five, six, seven, eight, nine, clear, equals },
+				Variables.getButtonHoverColor());
+		addMouseListenersTo(new JButton[] { undo, redo, left, right, neg, inv, sqr, sqrt, backspace, abs, plus, minus,
+				times, mod, divide, open, close, dot }, Variables.getButtonHoverColor2());
 	}
 
 	private void resizeButtons(int width, int height) {
@@ -364,6 +351,66 @@ public class StandardPanel extends JPanel {
 		for (JButton button : buttonArray) {
 			this.add(button);
 		}
+	}
+
+	private void addMouseListenersTo(JButton[] buttons, Color color) {
+		for (JButton button : buttons) {
+			button.addMouseListener(new MouseListener() {
+				Color myColor;
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {
+
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					myColor = button.getBackground();
+					button.setBackground(color);
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					button.setBackground(myColor);
+				}
+
+			});
+		}
+	}
+
+	private void addKeyListenersTo(JButton[] buttons) {
+		for (JButton button : buttons) {
+			button.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					caretPosition = board.getCaretPosition() + 1;
+					board.setText(
+							new StringBuilder(board.getText()).insert(caretPosition - 1, button.getText()).toString());
+					board.setCaretPosition(caretPosition);
+				}
+			});
+		}
+	}
+
+	private void addModInsertListeners(JButton button) {
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
 	}
 
 }

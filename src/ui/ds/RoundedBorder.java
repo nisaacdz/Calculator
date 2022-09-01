@@ -12,7 +12,9 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.border.LineBorder;
 
 public class RoundedBorder extends LineBorder {
-	long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 1L;
+
 	private int radius;
 
 	public RoundedBorder(Color c, int thickness, int radius) {

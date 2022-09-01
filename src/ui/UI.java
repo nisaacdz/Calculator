@@ -61,7 +61,7 @@ public class UI {
 					@Override
 					public void paint(Graphics g) {
 						super.paint(g);
-						resizeButton.setBounds(getWidth() - 80, 0, 55, getHeight());
+						resizeButton.setBounds(getWidth() - 60, 0, 58, getHeight());
 					}
 				};
 				panel.setBackground(Variables.getScreenAndBackgroundColor());
@@ -73,7 +73,7 @@ public class UI {
 				optionsButton.setFont(new Font("Microsoft JhengHei", Font.BOLD, 18));
 				optionsButton.setSize(Variables.getMenuButtonSize());
 				optionsButton.setBorder(new RoundedBorder(Variables.getScreenAndBackgroundColor(), 1, 8));
-				optionsButton.setBackground(Variables.getButtonColor());
+				optionsButton.setBackground(Variables.getStandardModeNumberButtons());
 				addMouseListenerTo(optionsButton);
 				addPopup(optionsButton, getPopupMenu());
 
@@ -106,7 +106,7 @@ public class UI {
 
 				resizeButton = new JButton("↖↘");
 				resizeButton.setFont(new Font(Font.DIALOG, Font.BOLD, 11));
-				resizeButton.setBackground(Variables.getButtonColor());
+				resizeButton.setBackground(Variables.getStandardModeNumberButtons());
 				addMouseListenerTo(resizeButton);
 				addResizeListener(resizeButton);
 				panel.add(resizeButton);
@@ -231,7 +231,7 @@ public class UI {
 		board2.setForeground(Color.BLACK);
 		board2.setHorizontalAlignment(JTextField.RIGHT);
 		board2.setFont(new Font("Microsoft JhengHei", Font.BOLD, 30));
-		board2.getCaret().setBlinkRate(500);
+		board2.getCaret().setBlinkRate(350);
 		board2.setCaretPosition(0);
 		board2.getCaret().setVisible(true);
 		board2.setCaretColor(Color.RED);

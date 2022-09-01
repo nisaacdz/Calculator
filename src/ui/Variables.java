@@ -21,7 +21,7 @@ public class Variables {
 	}
 
 	public static Color getScreenAndBackgroundColor() {
-		return new Color(220, 220, 220);
+		return Color.LIGHT_GRAY;
 	}
 
 	public static Bounds getPopupMenuSize() {
@@ -33,7 +33,7 @@ public class Variables {
 	}
 
 	public static Color getStandardModeNumberButtons() {
-		return new Color(245, 240, 255);
+		return Color.WHITE;
 	}
 
 	public static int getExtraHeight() {
@@ -45,10 +45,18 @@ public class Variables {
 	}
 
 	public static Color getButtonColor() {
-		return Color.LIGHT_GRAY;
+		return getOtherButtonsColor();
 	}
 
-	public static Color getBackgroundColor() {
+	public static Color getButtonHoverColor() {
+		return getOtherButtonsColor();
+	}
+
+	public static Color getOtherButtonsColor() {
 		return new Color(200, 220, 255);
+	}
+
+	public static Color getButtonHoverColor2() {
+		return Color.WHITE;
 	}
 }
