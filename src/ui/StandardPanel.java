@@ -14,7 +14,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 
 import ui.ds.Vec;
 
@@ -23,29 +23,39 @@ public class StandardPanel extends JPanel {
 	private class MyButton extends JButton {
 		private static final long serialVersionUID = 1L;
 
+		public Color realColor;
+		public Color hoverColor;
+
 		public MyButton(String args) {
 			super(args);
+			realColor = Variables.getOtherButtonsColor();
+			hoverColor = Variables.getButtonHoverColor2();
+			this.setBackground(realColor);
 			this.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
-			this.setBackground(new Color(200, 220, 255));
 		}
 
 		public MyButton(int num) {
 			super(String.valueOf(num));
-			this.setBackground(Variables.getStandardModeNumberButtons());
+			realColor = Variables.getStandardModeNumberButtons();
+			hoverColor = Variables.getButtonHoverColor();
+			this.setBackground(realColor);
 			this.setFont(new Font("Microsoft JhengHei", Font.BOLD, 30));
-		}
-
-		public MyButton(String args, Color color) {
-			super(args);
-			this.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
-			this.setBackground(color);
-
 		}
 
 		public MyButton(String args, int fontSize) {
 			super(args);
+			realColor = Variables.getOtherButtonsColor();
+			hoverColor = Variables.getButtonHoverColor2();
+			this.setBackground(realColor);
 			this.setFont(new Font(Font.DIALOG, Font.BOLD, fontSize));
-			this.setBackground(new Color(200, 220, 255));
+		}
+
+		public MyButton(String string, int i, int bold) {
+			super(string);
+			realColor = Variables.getOtherButtonsColor();
+			hoverColor = Variables.getButtonHoverColor2();
+			this.setBackground(realColor);
+			this.setFont(new Font(Font.DIALOG, bold, i));
 		}
 	}
 
@@ -60,7 +70,7 @@ public class StandardPanel extends JPanel {
 
 		@Override
 		public String toString() {
-			return "[" + text + ", " + caretPosition + "]";
+			return "[\"" + text + "\", " + caretPosition + "]";
 		}
 
 		@Override
@@ -80,20 +90,19 @@ public class StandardPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private JFormattedTextField board;
-	private JButton undo, redo, left, right, clear, neg, inv, sqr, sqrt, backspace;
-	private JButton seven, eight, nine, minus, abs, four, five, six, plus, times;
-	private JButton one, two, three, divide, mod, zero, dot, open, close, equals;
+	private MyButton undo, redo, left, right, clear, home, inv, sqr, sqrt, backspace;
+	private MyButton seven, eight, nine, minus, abs, four, five, six, plus, times;
+	private MyButton one, two, three, divide, mod, dot, zer, open, close, equals;
 
-	private JButton[] buttonArray;
-
-	private int caretPosition = 0;
+	private MyButton[] buttonArray;
+	private Status peeker;
 
 	private Vec<Status> myVector = new Vec<>(350);
 
 	public StandardPanel(JFormattedTextField board) {
 		super();
 		this.board = board;
-		myVector.push(new StandardPanel.Status("", 0));
+		myVector.push(new Status("", 0));
 		this.setLayout(null);
 		initializeButtons();
 		implementListeners();
@@ -102,12 +111,12 @@ public class StandardPanel extends JPanel {
 	private void initializeButtons() {
 		undo = new MyButton("↻", 27);
 		redo = new MyButton("↺", 27);
-		left = new MyButton("←");
-		right = new MyButton("→");
-		clear = new MyButton("CE", Variables.getStandardModeNumberButtons());
-		neg = new MyButton("-x");
+		left = new MyButton("←", 27, Font.BOLD);
+		right = new MyButton("→", 27, Font.BOLD);
+		clear = new MyButton("CE");
+		home = new MyButton("H");
 		inv = new MyButton("inv", 18);
-		sqr = new MyButton("x²");
+		sqr = new MyButton("a^b");
 		sqrt = new MyButton("√", 27);
 		backspace = new MyButton("⌫");
 		seven = new MyButton(7);
@@ -125,14 +134,14 @@ public class StandardPanel extends JPanel {
 		three = new MyButton(3);
 		divide = new MyButton("÷");
 		mod = new MyButton("mod", 18);
-		zero = new MyButton(0);
+		zer = new MyButton(0);
 		dot = new MyButton(".", 30);
 		open = new MyButton("(");
 		close = new MyButton(")");
-		equals = new MyButton("=", Variables.getStandardModeNumberButtons());
+		equals = new MyButton("=");
 
-		JButton[] myButtonArray = { undo, redo, left, right, clear, neg, inv, sqr, sqrt, backspace, seven, eight, nine,
-				minus, abs, four, five, six, plus, times, one, two, three, divide, mod, zero, dot, open, close,
+		MyButton[] myButtonArray = { undo, redo, left, right, clear, home, inv, sqr, sqrt, backspace, seven, eight,
+				nine, minus, abs, four, five, six, plus, times, one, two, three, divide, mod, dot, zer, open, close,
 				equals };
 		this.buttonArray = myButtonArray;
 
@@ -142,7 +151,7 @@ public class StandardPanel extends JPanel {
 	}
 
 	private void implementListeners() {
-		addKeyListenersTo(new JButton[] { one, two, three, four, five, six, seven, eight, nine, zero, dot, times, plus,
+		addKeyListenersTo(new JButton[] { one, two, three, four, five, six, seven, eight, nine, dot, zer, times, plus,
 				minus, divide, open, close });
 		addBackListenerTo(left, false);
 		addBackListenerTo(right, true);
@@ -151,10 +160,12 @@ public class StandardPanel extends JPanel {
 		addUndoRedoListener(undo, true);
 		addUndoRedoListener(redo, false);
 		addDocumentListenerTo(board);
-		addMouseListenersTo(new JButton[] { zero, one, two, three, four, five, six, seven, eight, nine, clear, equals },
-				Variables.getButtonHoverColor());
-		addMouseListenersTo(new JButton[] { undo, redo, left, right, neg, inv, sqr, sqrt, backspace, abs, plus, minus,
-				times, mod, divide, open, close, dot }, Variables.getButtonHoverColor2());
+		addMouseListenersTo(buttonArray);
+		addModInsertListenerTo(mod);
+		addSqrtInsertListenerTo(sqrt);
+		addInverseInsertListenerTo(inv);
+		addAbsInsertListenerTo(abs);
+		addHomeListener(home);
 	}
 
 	private void resizeButtons(int width, int height) {
@@ -165,7 +176,6 @@ public class StandardPanel extends JPanel {
 		int bHeight = (height - 15) / 6;
 
 		makeButtonsInvisible();
-		removeAllFromThis();
 
 		undo.setBounds(x, y, bWidth, bHeight);
 		x += bWidth + 3;
@@ -180,7 +190,7 @@ public class StandardPanel extends JPanel {
 		x = 0;
 		y += bHeight + 3;
 
-		neg.setBounds(x, y, bWidth, bHeight);
+		home.setBounds(x, y, bWidth, bHeight);
 		x += bWidth + 3;
 		inv.setBounds(x, y, bWidth, bHeight);
 		x += bWidth + 3;
@@ -232,9 +242,9 @@ public class StandardPanel extends JPanel {
 		x = 0;
 		y += bHeight + 3;
 
-		zero.setBounds(x, y, bWidth, bHeight);
-		x += bWidth + 3;
 		dot.setBounds(x, y, bWidth, bHeight);
+		x += bWidth + 3;
+		zer.setBounds(x, y, bWidth, bHeight);
 		x += bWidth + 3;
 		open.setBounds(x, y, bWidth, bHeight);
 		x += bWidth + 3;
@@ -242,7 +252,6 @@ public class StandardPanel extends JPanel {
 		x += bWidth + 3;
 		equals.setBounds(x, y, bWidth, bHeight);
 
-		addAllToThis();
 		makeButtonsVisible();
 	}
 
@@ -269,18 +278,16 @@ public class StandardPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (clear) {
-					board.setText("");
-					board.getCaret().setVisible(true);
-				} else {
-					caretPosition = board.getCaretPosition();
-					StringBuilder s = new StringBuilder(board.getText());
-					if (caretPosition - 1 > -1 && caretPosition > 0) {
-						s.deleteCharAt(caretPosition - 1);
-						caretPosition -= 1;
-						board.setText(s.toString());
-						board.setCaretPosition(caretPosition);
+				try {
+					if (clear) {
+						board.getDocument().remove(0, board.getText().length());
+					} else {
+						int i = board.getCaretPosition();
+						if (i > 0)
+							board.getDocument().remove(--i, 1);
 					}
+				} catch (BadLocationException a) {
+					a.printStackTrace();
 				}
 			}
 
@@ -298,13 +305,10 @@ public class StandardPanel extends JPanel {
 					myVector.redo();
 				}
 
-				if (myVector.len() == 0) {
-					board.setText("");
-				} else {
-					board.setText(myVector.peek().text);
-					board.setCaretPosition(myVector.peek().caretPosition);
-				}
-
+				peeker = myVector.peek();
+				System.out.println(peeker);
+				board.setText(peeker.text);
+				board.setCaretPosition(peeker.caretPosition);
 			}
 
 		});
@@ -315,7 +319,7 @@ public class StandardPanel extends JPanel {
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				myVector.querry(new Status(board.getText(), caretPosition));
+				myVector.querry(new Status(board.getText(), UI.caretPos + 1));
 			}
 
 			@Override
@@ -341,22 +345,15 @@ public class StandardPanel extends JPanel {
 		}
 	}
 
-	private void removeAllFromThis() {
-		for (JButton button : buttonArray) {
-			this.remove(button);
-		}
-	}
-
 	private void addAllToThis() {
 		for (JButton button : buttonArray) {
 			this.add(button);
 		}
 	}
 
-	private void addMouseListenersTo(JButton[] buttons, Color color) {
-		for (JButton button : buttons) {
+	private void addMouseListenersTo(MyButton[] buttons) {
+		for (MyButton button : buttons) {
 			button.addMouseListener(new MouseListener() {
-				Color myColor;
 
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -377,13 +374,24 @@ public class StandardPanel extends JPanel {
 
 				@Override
 				public void mouseEntered(MouseEvent e) {
-					myColor = button.getBackground();
-					button.setBackground(color);
+					button.setBackground(button.hoverColor);
 				}
 
 				@Override
 				public void mouseExited(MouseEvent e) {
-					button.setBackground(myColor);
+					new Thread(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								Thread.sleep(500);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							button.setBackground(button.realColor);
+						}
+
+					}).start();
 				}
 
 			});
@@ -395,20 +403,79 @@ public class StandardPanel extends JPanel {
 			button.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					caretPosition = board.getCaretPosition() + 1;
-					board.setText(
-							new StringBuilder(board.getText()).insert(caretPosition - 1, button.getText()).toString());
-					board.setCaretPosition(caretPosition);
+					try {
+						board.getDocument().insertString(board.getCaretPosition(), button.getText(), null);
+					} catch (BadLocationException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			});
 		}
 	}
 
-	private void addModInsertListeners(JButton button) {
+	private void addModInsertListenerTo(JButton button) {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				try {
+					board.getDocument().insertString(board.getCaretPosition(), "mod", null);
+				} catch (BadLocationException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+	}
+
+	private void addSqrtInsertListenerTo(JButton button) {
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					board.getDocument().insertString(board.getCaretPosition(), button.getText() + "()", null);
+					board.setCaretPosition(board.getCaretPosition() - 1);
+				} catch (BadLocationException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+	}
+
+	private void addInverseInsertListenerTo(JButton button) {
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					board.getDocument().insertString(board.getCaretPosition(), "inv()", null);
+					board.setCaretPosition(board.getCaretPosition() - 1);
+				} catch (BadLocationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+	}
+
+	private void addAbsInsertListenerTo(JButton button) {
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					board.getDocument().insertString(board.getCaretPosition(), "||", null);
+					board.setCaretPosition(board.getCaretPosition() - 1);
+				} catch (BadLocationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+	}
+
+	private void addHomeListener(JButton button) {
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				board.setCaretPosition(board.getText().length());
 			}
 		});
 	}

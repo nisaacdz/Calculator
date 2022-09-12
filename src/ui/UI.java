@@ -40,6 +40,8 @@ public class UI {
 	private static int innerPanelHeight;
 	private static int innerPanelWidth;
 
+	protected static int caretPos;
+
 	/**
 	 * @wbp.parser.entryPoint
 	 */
@@ -333,6 +335,7 @@ public class UI {
 
 			@Override
 			public void caretUpdate(CaretEvent e) {
+				caretPos = board.getCaretPosition();
 				board.getCaret().setVisible(true);
 			}
 
